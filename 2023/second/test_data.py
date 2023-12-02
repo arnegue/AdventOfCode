@@ -35,3 +35,26 @@ class TestPart1(object):
         test_game = Game.parse_string(test_line)
 
         assert test_game == expected_results
+
+    @pytest.mark.parametrize("test_line, expected_result", [[split_data[0], True],
+                                                            [split_data[1], True],
+                                                            [split_data[2], False],
+                                                            [split_data[3], False],
+                                                            [split_data[4], True]])
+    def test_possible_game(self, test_line, expected_result):
+        set_cubes = SetCubes([(12, Cube(Color.red)), (13, Cube(Color.green)), (14, Cube(Color.blue))])
+        test_game = Game.parse_string(test_line)
+        assert expected_result == test_game.game_possible(set_cubes)
+
+    def test_other_games_possible(self):  # For part 1 test
+        set_cubes = SetCubes([(12, Cube(Color.red)), (13, Cube(Color.green)), (14, Cube(Color.blue))])
+
+        with open("./test_data.txt", "r") as file:
+            lines = file.readlines()
+
+        possible_game_sum = 0
+        for line in lines:
+            test_game = Game.parse_string(line)
+            if test_game.game_possible(set_cubes):
+                possible_game_sum += test_game.game_id
+        print("Possible games_no:", possible_game_sum)

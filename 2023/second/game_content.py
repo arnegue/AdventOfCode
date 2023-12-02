@@ -37,6 +37,12 @@ class SetCubes(object):
     def __init__(self, amount_cube_colors: list[tuple[int, Cube]]):
         self.amount_cube_colors = amount_cube_colors
 
+    def get_set(self, color):
+        for cube_set in self.amount_cube_colors:
+            if cube_set[1].color == color:
+                return cube_set
+        return None
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.amount_cube_colors == other.amount_cube_colors
@@ -79,3 +85,23 @@ class Game(object):
                     return True
 
         return False
+
+    def game_possible(self, possible_cubes: SetCubes) -> bool:
+        max_own_colors = dict()
+        for color in Color:
+            max_color = 0
+
+            for own_set in self.list_sets:
+                color_set = own_set.get_set(color)
+                if color_set:
+                    max_color = max(max_color, color_set[0])
+
+            max_own_colors[color] = max_color
+
+        for color in Color:
+            possible_cube = possible_cubes.get_set(color)
+            if possible_cube is not None:
+                if possible_cube[0] < max_own_colors[color]:
+                    return False
+        return True
+
