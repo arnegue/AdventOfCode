@@ -53,13 +53,13 @@ class TestPart2:
         assert TestDataEvaluatorPart2.evaluate_line(line) == expected_result
 
     @staticmethod
-    @pytest.mark.parametrize(("line", "expected_result"), (#["12", 12],
-                                                           #["onetwo", 12],
-                                                           #["1two1", 11],
-                                                           #["eightwothree.", 83],
-                                                           #["sevenine", 79],
-                                                           #["3lsevenonebpgfgonethreeeightwos", 32],
-                                                           #["898xyxchoasuhz", 88],
+    @pytest.mark.parametrize(("line", "expected_result"), (["12", 12],
+                                                           ["onetwo", 12],
+                                                           ["1two1", 11],
+                                                           ["eightwothree.", 83],
+                                                           ["sevenine", 79],
+                                                           ["3lsevenonebpgfgonethreeeightwos", 32],
+                                                           ["898xyxchoasuhz", 88],
                                                            ["1cf", 11],
                                                            ["four4rjrkzvfive2cfl7fourfive", 45]))
     def test_custom_lines(line, expected_result):
