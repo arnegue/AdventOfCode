@@ -58,3 +58,22 @@ class TestPart1(object):
             if test_game.game_possible(set_cubes):
                 possible_game_sum += test_game.game_id
         print("Possible games_no:", possible_game_sum)
+
+
+class TestPart2(object):
+    test_data = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\r" \
+                "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\r" \
+                "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\r" \
+                "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\r" \
+                "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green\r"
+    split_data = test_data.splitlines(keepends=False)
+
+    @pytest.mark.parametrize("test_line, expected_result", [[split_data[0], 48],
+                                                            [split_data[1], 12],
+                                                            [split_data[2], 1560],
+                                                            [split_data[3], 630],
+                                                            [split_data[4], 36]])
+    def test_power_of_cubes(self, test_line, expected_result):
+        test_game = Game.parse_string(test_line)
+        minimum_set = test_game.get_minimum_set()
+        assert expected_result == minimum_set.get_power_of_cubes()

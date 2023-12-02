@@ -49,6 +49,12 @@ class SetCubes(object):
         else:
             return False
 
+    def get_power_of_cubes(self) -> int:
+        temp_power = 1
+        for amount, color in self.amount_cube_colors:
+            temp_power *= amount
+        return temp_power
+
 
 class Game(object):
     def __init__(self, game_id: int, list_sets: list[SetCubes]):
@@ -87,7 +93,16 @@ class Game(object):
         return False
 
     def game_possible(self, possible_cubes: SetCubes) -> bool:
-        max_own_colors = dict()
+        max_own_colors = self.get_minimum_set()
+        for color in Color:
+            possible_cube = possible_cubes.get_set(color)
+            if possible_cube is not None:
+                if possible_cube[0] < max_own_colors.get_set(color)[0]:
+                    return False
+        return True
+
+    def get_minimum_set(self):
+        list_colors = []
         for color in Color:
             max_color = 0
 
@@ -96,12 +111,5 @@ class Game(object):
                 if color_set:
                     max_color = max(max_color, color_set[0])
 
-            max_own_colors[color] = max_color
-
-        for color in Color:
-            possible_cube = possible_cubes.get_set(color)
-            if possible_cube is not None:
-                if possible_cube[0] < max_own_colors[color]:
-                    return False
-        return True
-
+            list_colors.append((max_color, Cube(color)))
+        return SetCubes(list_colors)
