@@ -2,15 +2,15 @@ import pytest
 
 from game_content import Game, Color, SetCubes, Cube
 
+test_data = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\r" \
+            "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\r" \
+            "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\r" \
+            "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\r" \
+            "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green\r"
+split_data = test_data.splitlines(keepends=False)
+
 
 class TestPart1(object):
-    test_data = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\n" \
-                "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\n" \
-                "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\n" \
-                "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\n" \
-                "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green\n"
-    split_data = test_data.splitlines(keepends=False)
-
     @classmethod
     @pytest.mark.parametrize(("test_line", "expected_results"), ([split_data[0], Game(1, [SetCubes([(3, Cube(Color.blue)), (4, Cube(Color.red))]),
                                                                                           SetCubes([(1, Cube(Color.red)), (2, Cube(Color.green)), (6, Cube(Color.blue))]),
@@ -61,13 +61,6 @@ class TestPart1(object):
 
 
 class TestPart2(object):
-    test_data = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\r" \
-                "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\r" \
-                "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\r" \
-                "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\r" \
-                "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green\r"
-    split_data = test_data.splitlines(keepends=False)
-
     @pytest.mark.parametrize("test_line, expected_result", [[split_data[0], 48],
                                                             [split_data[1], 12],
                                                             [split_data[2], 1560],
@@ -77,3 +70,14 @@ class TestPart2(object):
         test_game = Game.parse_string(test_line)
         minimum_set = test_game.get_minimum_set()
         assert expected_result == minimum_set.get_power_of_cubes()
+
+    def test_sum_of_power_of_sets(self):  # For part 2 test
+        with open("./test_data.txt", "r") as file:
+            lines = file.readlines()
+
+        sum_of_power = 0
+        for line in lines:
+            test_game = Game.parse_string(line)
+            minimum_set = test_game.get_minimum_set()
+            sum_of_power += minimum_set.get_power_of_cubes()
+        print("Possible games_no:", sum_of_power)
