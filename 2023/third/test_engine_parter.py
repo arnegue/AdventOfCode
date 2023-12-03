@@ -30,9 +30,10 @@ class TestPart1:
                     ".........$\n"\
                     "984....123\n"\
                     "321%......"
-        expected_data = {456, 123, 984, 321}
+        expected_data = [123, 321, 456, 984]
         evaluator = PartEvaluator(test_data)
         parts = evaluator.evaluate_parts()
+        parts.sort()
         assert parts == expected_data
 
     def test_part_sum_test_data(self):  # For part 1 test

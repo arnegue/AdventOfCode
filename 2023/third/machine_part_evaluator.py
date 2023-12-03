@@ -6,17 +6,17 @@ class PartEvaluator(object):
         self.parts = parts
 
     def evaluate_parts(self):
-        parts = set()
+        parts = list()
         lines = self.parts.splitlines(keepends=False)
         for i in range(len(lines)):
             previous_line = lines[i - 1] if i > 0 else None
             current_line = lines[i]
             next_line = lines[i + 1] if i + 1 < len(lines) else None
-            parts.update(self.get_machine_parts(previous_line, current_line, next_line))
+            parts += self.get_machine_parts(previous_line, current_line, next_line)
         return parts
 
-    def get_machine_parts(self, previous_line, current_line, next_line) -> set:
-        return_set = set()
+    def get_machine_parts(self, previous_line, current_line, next_line) -> list:
+        return_list = []
         for match in re.finditer(r'\d+', current_line):
             part_number = int(match.group())
             start_index = match.start()
@@ -30,9 +30,9 @@ class PartEvaluator(object):
             if not in_line and next_line is not None:
                 in_line = self.sing_in_line(next_line, start_index, end_index)
             if in_line:
-                return_set.add(part_number)
+                return_list.append(part_number)
 
-        return return_set
+        return return_list
 
     @classmethod
     def sing_in_line(cls, line, start_index, end_index) -> bool:
