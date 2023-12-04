@@ -1,7 +1,7 @@
 import re
 
 
-class GameEvaluator:
+class Card:
     def __init__(self, line: str):
         self.line = line
 
@@ -32,3 +32,4 @@ class GameEvaluator:
         for match in re.finditer(r'\d+', line):
             numbers.append(int(match.group()))
         return numbers
+

@@ -1,5 +1,5 @@
 import pytest
-from game_card_evaluator import GameEvaluator
+from game_card_evaluator import Card
 
 
 class TestPart1:
@@ -21,7 +21,7 @@ class TestPart1:
         [split_data[5], 0],
     ])
     def test_game_data(self, line, expected_points):
-        evaluator = GameEvaluator(line)
+        evaluator = Card(line)
         evaluator.evaluate_data()
         actual_points = evaluator.get_winning_points()
         assert actual_points == expected_points
@@ -32,7 +32,7 @@ class TestPart1:
 
         total_points = 0
         for line in lines:
-            evaluator = GameEvaluator(line)
+            evaluator = Card(line)
             evaluator.evaluate_data()
             total_points += evaluator.get_winning_points()
         print("Total Points:", total_points)
