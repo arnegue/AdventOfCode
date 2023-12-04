@@ -6,20 +6,20 @@ class GameEvaluator:
         self.line = line
 
         self.id = -1
-        self.possible_winning_numbers = []
-        self.won_numbers = []
+        self.winning_numbers = []
+        self.own_numbers = []
 
     def evaluate_data(self):
         id_, rest = self.line.split(":")
         possible_numbers, won_numbers = rest.split("|")
 
-        self.possible_winning_numbers = self.get_numbers_from_line(possible_numbers)
-        self.won_numbers = self.get_numbers_from_line(won_numbers)
+        self.winning_numbers = self.get_numbers_from_line(possible_numbers)
+        self.own_numbers = self.get_numbers_from_line(won_numbers)
 
     def get_winning_points(self):
         temp_points = 0
-        for possible_number in self.possible_winning_numbers:
-            if possible_number in self.won_numbers:
+        for possible_number in self.own_numbers:
+            if possible_number in self.winning_numbers :
                 if temp_points == 0:
                     temp_points = 1
                 else:

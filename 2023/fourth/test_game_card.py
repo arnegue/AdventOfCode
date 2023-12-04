@@ -36,3 +36,4 @@ class TestPart1:
             evaluator.evaluate_data()
             total_points += evaluator.get_winning_points()
         print("Total Points:", total_points)
+        assert total_points == 25571
