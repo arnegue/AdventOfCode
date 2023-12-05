@@ -59,7 +59,7 @@ class TestPart2:
 
         assert evaluator.get_amount_cards() == 30
 
-    def test_real_data(self):  # For part 1 test
+    def test_real_data(self):  # For part 2 test
         with open("./test_data.txt", "r") as file:
             lines = file.readlines()
 
