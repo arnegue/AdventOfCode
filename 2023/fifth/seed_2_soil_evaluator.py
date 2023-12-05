@@ -6,7 +6,6 @@ def get_numbers_from_line(line):
     return [int(number) for number in numbers]
 
 
-
 class MapParser(object):
     def __init__(self, map_string):
         self.source = ""

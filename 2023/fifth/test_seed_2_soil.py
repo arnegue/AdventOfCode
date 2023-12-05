@@ -85,3 +85,10 @@ class TestPart1:
         lowest_location = data_parser.get_lowest_location_number()
         assert lowest_location == 35
 
+    def test_lowest_location_part_1(self):  # For part 1 test
+        with open("./test_data.txt", "r") as file:
+            lines = file.read()
+
+        data_parser = DataParser(lines)
+        lowest_location = data_parser.get_lowest_location_number()
+        print("Lowest location:", lowest_location)
