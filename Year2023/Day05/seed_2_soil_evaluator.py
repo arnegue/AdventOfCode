@@ -1,6 +1,5 @@
 import re
 from collections import OrderedDict
-from dataclasses import dataclass
 
 
 def get_numbers_from_line(line):
@@ -50,8 +49,6 @@ class MapParser(object):
 
             return source
 
-            pass  # Todo get lowest and look if it is in range, else, return source
-
     @classmethod
     def parse_line(cls, line: str) -> dict:
         numbers = get_numbers_from_line(line)
@@ -76,8 +73,12 @@ class DataParser(object):
 
     def parse_data(self, data: str):
         data = data.split("\n\n")
-        self.searched_seeds = get_numbers_from_line(data[0])
+        self.searched_seeds = self.get_searched_seeds(data[0])
         self.parse_map_parsers(data[1:])
+
+    @classmethod
+    def get_searched_seeds(cls, data):
+        return get_numbers_from_line(data)
 
     def parse_map_parsers(self, data):
         for data_ in data:
@@ -106,3 +107,25 @@ class DataParser(object):
             location_number = self.get_source_to_destination(source="seed", destination="location", source_value=seed_number)
             location_numbers.append(location_number)
         return min(location_numbers)
+
+
+class Part2DataParser(DataParser):
+    @classmethod
+    def get_searched_seeds(cls, data):
+        all_numbers = super().get_searched_seeds(data)
+        searched_tuples = []
+        for i in range(0, len(all_numbers), 2):
+            searched_tuples.append((all_numbers[i], all_numbers[i+1]))
+
+        return searched_tuples
+
+    def get_lowest_location_number(self):
+        minimum_location_number = None
+        for start_range, range_len in self.searched_seeds:
+            for number in range(start_range, start_range + range_len):
+                location_number = self.get_source_to_destination(source="seed", destination="location", source_value=number)
+                if minimum_location_number is None:
+                    minimum_location_number = location_number
+                else:
+                    minimum_location_number = min(minimum_location_number, location_number)
+        return minimum_location_number

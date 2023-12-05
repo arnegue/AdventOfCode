@@ -1,6 +1,6 @@
 import pytest
 
-from seed_2_soil_evaluator import DataParser
+from seed_2_soil_evaluator import DataParser, Part2DataParser
 
 
 class TestPart1:
@@ -94,3 +94,19 @@ class TestPart1:
         lowest_location = data_parser.get_lowest_location_number()
         print("Lowest location:", lowest_location)
         assert lowest_location == 403695602
+
+
+class TestPart2:
+    def test_lowest_location(self):
+        data_parser = Part2DataParser(TestPart1.test_data)
+        lowest_location = data_parser.get_lowest_location_number()
+        assert lowest_location == 46
+
+    def test_lowest_location_part_2(self):  # For part 2 test
+        with open("./test_data.txt", "r") as file:
+            lines = file.read()
+
+        data_parser = Part2DataParser(lines)
+        lowest_location = data_parser.get_lowest_location_number()
+        print("Lowest location:", lowest_location)
+
