@@ -70,3 +70,18 @@ class TestPart1:
         data_parser = DataParser(self.test_data)
         map_parser = data_parser.get_map_parser("seed")
         assert map_parser.map[seed_number] == soil_number
+
+    @pytest.mark.parametrize("seed_number, location", [[79, 82],
+                                                       [14, 43],
+                                                       [55, 86],
+                                                       [13, 35]])
+    def test_source_to_destination(self, seed_number, location):
+        data_parser = DataParser(self.test_data)
+        result_value = data_parser.get_source_to_destination(source="seed", destination="location", source_value=seed_number)
+        assert result_value == location
+
+    def test_lowest_location(self):
+        data_parser = DataParser(self.test_data)
+        lowest_location = data_parser.get_lowest_location_number()
+        assert lowest_location == 35
+

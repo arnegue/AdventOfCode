@@ -67,5 +67,21 @@ class DataParser(object):
     def get_map_parser(self, source_name) -> MapParser:
         return self.map_parsers[source_name]
 
+    def get_source_to_destination(self, source: str, destination: str, source_value: int):
+        destination_found = False
+        temp_source_value = source_value
+        temp_source = source
+        while not destination_found:
+            map_parser = self.get_map_parser(temp_source)
+            temp_source_value = map_parser.map[temp_source_value]
+            temp_source = map_parser.destination
+            if map_parser.destination == destination:
+                destination_found = True
+        return temp_source_value
 
-
+    def get_lowest_location_number(self):
+        location_numbers = []
+        for seed_number in self.searched_seeds:
+            location_number = self.get_source_to_destination(source="seed", destination="location", source_value=seed_number)
+            location_numbers.append(location_number)
+        return min(location_numbers)
