@@ -57,10 +57,10 @@ class TestPart1:
         map_parser = data_parser.get_map_parser("seed")
         result_map = self.generate_result_map()
 
-        assert len(map_parser.map) == len(result_map)
-        for i in range(len(map_parser.map)):
-            assert map_parser.map[i] == result_map[i], f"index {i} is not equal"
-        assert map_parser.map == result_map
+        assert len(map_parser._map) == len(result_map)
+        for i in range(len(map_parser._map)):
+            assert map_parser._map[i] == result_map[i], f"index {i} is not equal"
+        assert map_parser._map == result_map
 
     @pytest.mark.parametrize("seed_number, soil_number", [[79, 81],
                                                           [14, 14],
@@ -69,7 +69,7 @@ class TestPart1:
     def test_specific_values(self, seed_number, soil_number):
         data_parser = DataParser(self.test_data)
         map_parser = data_parser.get_map_parser("seed")
-        assert map_parser.map[seed_number] == soil_number
+        assert map_parser.get_destination_value(seed_number) == soil_number
 
     @pytest.mark.parametrize("seed_number, location", [[79, 82],
                                                        [14, 43],
@@ -92,3 +92,4 @@ class TestPart1:
         data_parser = DataParser(lines)
         lowest_location = data_parser.get_lowest_location_number()
         print("Lowest location:", lowest_location)
+        assert lowest_location == 403695602

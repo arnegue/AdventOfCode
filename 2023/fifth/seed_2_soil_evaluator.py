@@ -1,4 +1,6 @@
 import re
+from collections import OrderedDict
+from dataclasses import dataclass
 
 
 def get_numbers_from_line(line):
@@ -10,10 +12,7 @@ class MapParser(object):
     def __init__(self, map_string):
         self.source = ""
         self.destination = ""
-        self.map = {}
-        for i in range(100):  # Fill with default values
-            self.map[i] = i
-
+        self._map = OrderedDict()
         self.parse_string(map_string)
 
     def parse_string(self, map_string: str):
@@ -28,7 +27,30 @@ class MapParser(object):
     def parse_map(self, map_string: [str]):
         for line in map_string:
             return_dict = self.parse_line(line)
-            self.map.update(return_dict)
+            self._map.update(return_dict)
+
+    def get_destination_value(self, source):
+        if source in self._map:
+            destination, range_len = self._map[source]
+            return destination
+        else:
+            # Get previous value in map
+            previous_key = -1
+            sorted_items = sorted(self._map.keys())  # Lets hope this isnt that bad
+            for key in sorted_items:
+                if key > source:
+                    break
+                previous_key = key
+
+            if previous_key >= 0:
+                destination, range_len = self._map[previous_key]
+                if previous_key <= source < previous_key + range_len:
+                    difference = source - previous_key
+                    return destination + difference
+
+            return source
+
+            pass  # Todo get lowest and look if it is in range, else, return source
 
     @classmethod
     def parse_line(cls, line: str) -> dict:
@@ -36,14 +58,13 @@ class MapParser(object):
         if len(numbers) != 3:
             raise Exception(f"Unexpected line length != 3: {len(numbers)}")
 
-        return_dict = {}
+        return_dict = OrderedDict()
 
         destination = numbers[0]
         source = numbers[1]
         range_len = numbers[2]
 
-        for i in range(range_len):
-            return_dict[source + i] = destination + i
+        return_dict[source] = (destination, range_len)
         return return_dict
 
 
@@ -54,7 +75,7 @@ class DataParser(object):
         self.parse_data(data)
 
     def parse_data(self, data: str):
-        data = data.split("\n\n")  # TODO lineendings?
+        data = data.split("\n\n")
         self.searched_seeds = get_numbers_from_line(data[0])
         self.parse_map_parsers(data[1:])
 
@@ -72,8 +93,9 @@ class DataParser(object):
         temp_source = source
         while not destination_found:
             map_parser = self.get_map_parser(temp_source)
-            temp_source_value = map_parser.map[temp_source_value]
+            temp_source_value = map_parser.get_destination_value(temp_source_value)
             temp_source = map_parser.destination
+            print(temp_source, temp_source_value)
             if map_parser.destination == destination:
                 destination_found = True
         return temp_source_value
