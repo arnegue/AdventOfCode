@@ -1,6 +1,12 @@
 import re
 
 
+def get_numbers_from_line(line):
+    numbers = re.findall(r'\d+', line)
+    return [int(number) for number in numbers]
+
+
+
 class MapParser(object):
     def __init__(self, map_string):
         self.source = ""
@@ -27,16 +33,39 @@ class MapParser(object):
 
     @classmethod
     def parse_line(cls, line: str) -> dict:
-        numbers = re.findall(r'\d+', line)
+        numbers = get_numbers_from_line(line)
         if len(numbers) != 3:
             raise Exception(f"Unexpected line length != 3: {len(numbers)}")
 
         return_dict = {}
 
-        destination = int(numbers[0])
-        source = int(numbers[1])
-        range_len = int(numbers[2])
+        destination = numbers[0]
+        source = numbers[1]
+        range_len = numbers[2]
 
         for i in range(range_len):
             return_dict[source + i] = destination + i
         return return_dict
+
+
+class DataParser(object):
+    def __init__(self, data: str):
+        self.searched_seeds = []
+        self.map_parsers = {}
+        self.parse_data(data)
+
+    def parse_data(self, data: str):
+        data = data.split("\n\n")  # TODO lineendings?
+        self.searched_seeds = get_numbers_from_line(data[0])
+        self.parse_map_parsers(data[1:])
+
+    def parse_map_parsers(self, data):
+        for data_ in data:
+            new_map_parser = MapParser(data_)
+            self.map_parsers[new_map_parser.source] = new_map_parser
+
+    def get_map_parser(self, source_name) -> MapParser:
+        return self.map_parsers[source_name]
+
+
+

@@ -1,12 +1,42 @@
 import pytest
 
-from seed_2_soil_evaluator import MapParser
+from seed_2_soil_evaluator import MapParser, DataParser
 
 
 class TestPart1:
-    test_data = "seed-to-soil map:\n" \
+    test_data = "seeds: 79 14 55 13\n" \
+                "\n" \
+                "seed-to-soil map:\n" \
                 "50 98 2\n" \
-                "52 50 48"
+                "52 50 48\n" \
+                "\n" \
+                "soil-to-fertilizer map:\n" \
+                "0 15 37\n" \
+                "37 52 2\n" \
+                "39 0 15\n" \
+                "\n" \
+                "fertilizer-to-water map:\n" \
+                "49 53 8\n" \
+                "0 11 42\n" \
+                "42 0 7\n" \
+                "57 7 4\n" \
+                "\n" \
+                "water-to-light map:\n" \
+                "88 18 7\n" \
+                "18 25 70\n" \
+                "\n" \
+                "light-to-temperature map:\n" \
+                "45 77 23\n" \
+                "81 45 19\n" \
+                "68 64 13\n" \
+                "\n" \
+                "temperature-to-humidity map:\n" \
+                "0 69 1\n" \
+                "1 0 69\n" \
+                "\n" \
+                "humidity-to-location map:\n" \
+                "60 56 37\n" \
+                "56 93 4"
 
     @staticmethod
     def generate_result_map():
@@ -23,7 +53,8 @@ class TestPart1:
         return result_map
 
     def test_values(self):
-        map_parser = MapParser(self.test_data)
+        data_parser = DataParser(self.test_data)
+        map_parser = data_parser.get_map_parser("seed")
         result_map = self.generate_result_map()
 
         assert len(map_parser.map) == len(result_map)
@@ -36,5 +67,6 @@ class TestPart1:
                                                           [55, 57],
                                                           [13, 13]])
     def test_specific_values(self, seed_number, soil_number):
-        map_parser = MapParser(self.test_data)
+        data_parser = DataParser(self.test_data)
+        map_parser = data_parser.get_map_parser("seed")
         assert map_parser.map[seed_number] == soil_number
