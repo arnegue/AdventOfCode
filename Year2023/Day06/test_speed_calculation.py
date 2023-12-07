@@ -1,6 +1,6 @@
 import pytest
 
-from speed_evaluator import SpeedEvaluator
+from speed_evaluator import SpeedEvaluator, Part2SpeedEvaluator
 
 
 class TestPart1:
@@ -10,7 +10,7 @@ class TestPart1:
     split_data = test_data.splitlines(keepends=False)
 
     def test_speed_calculate(self):
-        expected_results = [2, 3, 4, 5]  # TODO range?
+        expected_results = range(2, 6)
         evaluator = SpeedEvaluator(self.split_data)
         solution = evaluator.generate_solutions_to_beat_record(race_id=0)
         assert solution == expected_results
@@ -35,3 +35,21 @@ class TestPart1:
 
         print("Margin:", margin)
         assert margin == 4403592
+
+
+class TestPart2:
+    @pytest.mark.parametrize("race_id, amount_of_possibilities_to_win", [[0, 71503]])
+    def test_amount_solutions(self, race_id, amount_of_possibilities_to_win):
+        evaluator = Part2SpeedEvaluator(TestPart1.split_data)
+        solution = evaluator.generate_solutions_to_beat_record(race_id=race_id)
+        assert len(solution) == amount_of_possibilities_to_win
+
+    def test_with_real_data(self): # for part 2
+        with open("./test_data.txt", "r") as file:
+            lines = file.readlines()
+
+        evaluator = Part2SpeedEvaluator(lines)
+        solution = evaluator.generate_solutions_to_beat_record(race_id=0)
+
+        print("Amount of solution:", len(solution))
+        assert len(solution) == 38017587
