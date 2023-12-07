@@ -1,14 +1,6 @@
 import functools
 import enum
 
-card_map = {
-    "A": 14,
-    "K": 13,
-    "Q": 12,
-    "J": 11,
-    "T": 10
-}
-
 
 class CardType(enum.IntEnum):
     FiveOfAKind = 7
@@ -20,23 +12,9 @@ class CardType(enum.IntEnum):
     HighCard = 1
 
 
-def has_value(card: str) -> int:
-    if card in card_map:
-        return card_map[card]
-    else:
-        return int(card)
-
-
-def cards_to_numbers(cards: str):
-    list_cards = []
-    for char in cards:
-        list_cards.append(has_value(char))
-    return list_cards
-
-
 class Hand(object):
     def __init__(self, list_cards):
-        self._list_cards = cards_to_numbers(list_cards)
+        self._list_cards = self.cards_to_numbers(list_cards)
         self.strongest_typ: CardType = None
 
     def get_count(self, searched_card):
@@ -44,8 +22,8 @@ class Hand(object):
 
     def _get_x_of_a_kind(self, amount, ignore_card=None):
         for i in range(len(self._list_cards)):
-            #if i >= amount: # Todo this optimization is wrong
-            #    return None  # Doesn't make sense to search further
+            # if i >= amount: # Todo this optimization is wrong
+            #     return None  # Doesn't make sense to search further
             searched_card = self._list_cards[i]
             if ignore_card is not None and searched_card == ignore_card:
                 continue
@@ -126,15 +104,39 @@ class Hand(object):
         if own_strongest_type == own_strongest_type:
             return self.second_ordering_rule(other)
 
+    card_map = {
+        "A": 14,
+        "K": 13,
+        "Q": 12,
+        "J": 11,
+        "T": 10
+    }
+
+    @classmethod
+    def has_value(cls, card: str) -> int:
+        if card in cls.card_map:
+            return cls.card_map[card]
+        else:
+            return int(card)
+
+    @classmethod
+    def cards_to_numbers(cls, cards: str):
+        list_cards = []
+        for char in cards:
+            list_cards.append(cls.has_value(char))
+        return list_cards
+
+
 class HandsEvaluator(object):
-    def __init__(self, evaluation_string):
+    def __init__(self, evaluation_string, hands_class=Hand):
         self.list_tuple_hand_bidings = []
+        self.Hand = hands_class
         self.get_tuples(evaluation_string)
 
     def get_tuples(self, evaluation_string):
         for line in evaluation_string:
             hand_str, biding_factor_str = line.split(" ")
-            new_hand = Hand(hand_str)
+            new_hand = self.Hand(hand_str)
             biding_factor = int(biding_factor_str)
             new_tuple = (new_hand, biding_factor)
             self.list_tuple_hand_bidings.append(new_tuple)
