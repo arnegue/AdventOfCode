@@ -15,16 +15,14 @@ class CardType(enum.IntEnum):
 class Hand(object):
     def __init__(self, list_cards):
         self._list_cards = self.cards_to_numbers(list_cards)
-        self.strongest_typ: CardType = None
+        self.strongest_type: CardType = None
 
     def get_count(self, searched_card):
         return self._list_cards.count(searched_card)
 
     def _get_x_of_a_kind(self, amount, ignore_card=None):
         for i in range(len(self._list_cards)):
-            # if i >= amount: # Todo this optimization is wrong
-            #     return None  # Doesn't make sense to search further
-            searched_card = self._list_cards[i]
+            searched_card = self.get_card(i)
             if ignore_card is not None and searched_card == ignore_card:
                 continue
             count = self.get_count(searched_card)
@@ -77,20 +75,20 @@ class Hand(object):
                 return other
         raise Exception("Both hands are equally strong")
 
-    def get_strongest_type(self):
-        if self.strongest_typ is not None:
-            return self.strongest_typ
-        for card_type, function_ in ((CardType.FiveOfAKind, self.has_five_of_a_kind),
-                                     (CardType.FourOfAKind, self.has_four_of_a_kind),
-                                     (CardType.FulLHouse, self.has_full_house),
+    def get_strongest_type(self) -> CardType:
+        if self.strongest_type is not None:
+            return self.strongest_type
+        for card_type, function_ in ((CardType.FiveOfAKind,  self.has_five_of_a_kind),
+                                     (CardType.FourOfAKind,  self.has_four_of_a_kind),
+                                     (CardType.FulLHouse,    self.has_full_house),
                                      (CardType.ThreeOfAKind, self.has_three_of_a_kind),
-                                     (CardType.TwoPair, self.has_two_pair),
-                                     (CardType.OnePair, self.has_one_pair),
-                                     (CardType.HighCard, self.get_high_card)):
+                                     (CardType.TwoPair,      self.has_two_pair),
+                                     (CardType.OnePair,      self.has_one_pair),
+                                     (CardType.HighCard,     self.get_high_card)):
             return_card = function_()
             if return_card:
-                self.strongest_typ = card_type
-                return self.strongest_typ
+                self.strongest_type = card_type
+                return self.strongest_type
         raise Exception("Shouldn't come here")
 
     def compare_hands(self, other):
@@ -101,8 +99,10 @@ class Hand(object):
             return self
         elif other_strongest_type > own_strongest_type:
             return other
-        if own_strongest_type == own_strongest_type:
+        elif own_strongest_type == own_strongest_type:
             return self.second_ordering_rule(other)
+        else:
+            raise Exception("Shouldn't come here")
 
     card_map = {
         "A": 14,
@@ -127,6 +127,52 @@ class Hand(object):
         return list_cards
 
 
+class Part2Hand(Hand):
+    def __init__(self, list_cards):
+        self.__class__.card_map["J"] = 0  # New instead of 11
+        super().__init__(list_cards)
+        self._joker_count = None
+
+    def compare_hands(self, other):
+        own_strongest_type = self.get_strongest_type()
+        other_strongest_type = other.get_strongest_type()
+
+        if own_strongest_type > other_strongest_type:
+            return self
+        elif other_strongest_type > own_strongest_type:
+            return other
+        elif own_strongest_type == own_strongest_type:
+            own_jokers = self.get_amount_jokers()
+            other_jokers = other.get_amount_jokers()
+            if own_jokers == 5:
+                return self
+            elif other_jokers == 5:
+                return other
+            elif own_jokers < other_jokers:
+                return self
+            elif own_jokers > other_jokers:
+                return other
+            else:
+                return self.second_ordering_rule(other)
+        else:
+            raise Exception("Shouldn't come here")
+
+    def get_amount_jokers(self):
+        if self._joker_count is None:
+            self._joker_count = self.get_count(self.card_map["J"])
+        return self._joker_count
+
+    def _get_x_of_a_kind(self, amount, ignore_card=None):
+        for i in range(len(self._list_cards)):
+            searched_card = self.get_card(i)
+            if ignore_card is not None and searched_card == ignore_card:
+                continue
+            count = self.get_count(searched_card)
+            if count + self.get_amount_jokers() >= amount:
+                return searched_card
+        return None
+
+
 class HandsEvaluator(object):
     def __init__(self, evaluation_string, hands_class=Hand):
         self.list_tuple_hand_bidings = []
@@ -145,7 +191,8 @@ class HandsEvaluator(object):
         sorted_l = sorted(self.list_tuple_hand_bidings, key=functools.cmp_to_key(self.compare))
         return sorted_l
 
-    def compare(self, tuple_1, tuple_2):
+    @staticmethod
+    def compare(tuple_1, tuple_2):
         if tuple_1[0].compare_hands(tuple_2[0]) == tuple_1[0]:
             return +1
         else:
