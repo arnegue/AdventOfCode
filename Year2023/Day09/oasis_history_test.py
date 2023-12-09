@@ -1,5 +1,5 @@
 import pytest
-from oasis_history import OasisHistoryParser
+from oasis_history import OasisHistoryParser, OasisHistoryParserPart2
 
 
 class TestPart1:
@@ -55,3 +55,27 @@ class TestPart1:
         ohp = OasisHistoryParser(line)
         ohp.step_1_zeros()
         assert len(ohp.history_list) == 3
+
+
+class TestPart2:
+    @pytest.mark.parametrize("line, first_value", [[TestPart1.split_data[2], 5]])
+    def test_step_2(self, line, first_value):
+        ohp = OasisHistoryParserPart2(line)
+        ohp.step_1_zeros()
+        ohp.step_2_backwards()
+        assert ohp.history_list[0][0] == first_value
+
+    def test_part_2(self):  # For part 2 test
+        with open("./test_data.txt", "r") as file:
+            lines = file.readlines()
+
+        results = []
+        for line in lines:
+            ohp = OasisHistoryParserPart2(line)
+            ohp.step_1_zeros()
+            ohp.step_2_backwards()
+            results.append(ohp.history_list[0][0])
+
+        sum_results = sum(results)
+        print("Sum: ", sum_results)
+        assert sum_results == 864

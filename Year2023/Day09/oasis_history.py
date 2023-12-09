@@ -39,3 +39,12 @@ class OasisHistoryParser:
             calc_value = current_line[-1] + previous_line[-1]
             previous_line.append(calc_value)
 
+
+class OasisHistoryParserPart2(OasisHistoryParser):
+
+    def step_2_backwards(self):
+        for i in range(len(self.history_list) - 2, 0, -1):
+            current_line = self.history_list[i]
+            previous_line = self.history_list[i - 1]
+            calc_value = previous_line[0] - current_line[0]
+            previous_line.insert(0, calc_value)
