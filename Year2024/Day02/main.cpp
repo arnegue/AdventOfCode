@@ -51,8 +51,8 @@ int main()
         std::cout << "ERROR: in test\n";
     }
     
-   // if (FindAppearances("input") != 2176849) {
-   //     std::cout << "ERROR: in input\n";
-   // };
+    if (FindAppearances("input") != 23384288) {
+        std::cout << "ERROR: in input\n";
+    };
     return 0; 
 }
