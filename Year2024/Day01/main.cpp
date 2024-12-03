@@ -10,29 +10,26 @@ int GetDistance(std::string filePath)
 {
     std::string myline;
     std::ifstream myfile(filePath);
+    if (!myfile)
+    {
+        std::cerr << "Error: Unable to open file!" << std::endl;
+        return 1;
+    }
 
     std::multiset<int> left;
     std::multiset<int> right;
 
-    if (myfile.is_open())
+    while (std::getline(myfile, myline))
     {
-        while (myfile)
-        {
-            std::getline(myfile, myline);
-            std::istringstream lineStream(myline);
-            int first, second;
+        std::istringstream lineStream(myline);
+        int first, second;
 
-            // Extract two integers from the line
-            if (lineStream >> first >> second)
-            {
-                left.insert(first);
-                right.insert(second);
-            }
+        // Extract two integers from the line
+        if (lineStream >> first >> second)
+        {
+            left.insert(first);
+            right.insert(second);
         }
-    }
-    else
-    {
-        std::cout << "ERROR READING FILE\n";
     }
 
     int totalDistance = 0;
@@ -45,7 +42,7 @@ int GetDistance(std::string filePath)
         int leftMember = *left_iterator;
         int rightMember = *right_iterator;
 
-        std::cout << "Set1: " << leftMember<< ", Set2: " << rightMember << '\n';
+        // std::cout << "Set1: " << leftMember<< ", Set2: " << rightMember << '\n';
         int temp_distance = 0;
         if (rightMember > leftMember)
         {
@@ -67,11 +64,16 @@ int GetDistance(std::string filePath)
     return totalDistance;
 }
 
-
 int main()
 {
-    if (GetDistance("Day01/test_input.txt") != 11) {
-        std::cout << "ERROR: in test \n";
+    if (GetDistance("test_input.txt") != 11)
+    {
+        std::cout << "ERROR: in test\n";
     }
-    return 0; 
+
+    if (GetDistance("input") != 2176849)
+    {
+        std::cout << "ERROR: in input\n";
+    };
+    return 0;
 }
