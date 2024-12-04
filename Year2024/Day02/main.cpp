@@ -12,12 +12,29 @@ bool LevelIsSafe(std::vector<int> level)
 
     bool firstRun = true;
     int previousNumber;
+    bool creaseSet = false;
+    bool isIncreasing;
     for (int number : level)
     {
         if (!firstRun)
         {
-            if ((previousNumber <= number) ||
-                (number - previousNumber) > 3)
+            if (!creaseSet)
+            {
+                isIncreasing = previousNumber < number;
+                creaseSet = true;
+            }
+
+            // Swap of increase/decrease
+            int diff = previousNumber - number;
+            if ((isIncreasing && diff > 0) || (!isIncreasing && diff < 0))
+            {
+                isSafe = false;
+                break;
+            }
+
+            // 1 <= diff >= 3
+            diff = abs(diff);
+            if (diff < 1 || diff > 3)
             {
                 isSafe = false;
                 break;
@@ -47,16 +64,16 @@ int FindSafeLevels(std::string filePath)
         std::istringstream lineStream(myline);
         int nextNumber;
 
-        // Extract numbrers from the line
+        // Extract numbers from the line
         while (lineStream >> nextNumber)
         {
             level.emplace_back(nextNumber);
         }
 
-        if (LevelIsSafe(level)) {
+        if (LevelIsSafe(level))
+        {
             safeLevels += 1;
         }
-
     }
 
     std::cout << "FINISHED. FindSafeLevels: " << safeLevels << "\n";
@@ -70,7 +87,7 @@ int main()
         std::cout << "ERROR: in test\n";
     }
 
-    if (FindSafeLevels("input") != 23384288)
+    if (FindSafeLevels("input/input") != 321)
     {
         std::cout << "ERROR: in input\n";
     };
