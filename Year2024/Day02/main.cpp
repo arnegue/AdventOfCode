@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 
-bool LevelIsSafe(std::vector<int> level)
+bool LevelIsSafeP1(std::vector<int>& level)
 {
     bool isSafe = true;
 
@@ -46,8 +46,35 @@ bool LevelIsSafe(std::vector<int> level)
     return isSafe;
 }
 
+void copyVectorLeaveOut(std::vector<int>& input, std::vector<int>& output, int leaveOutIndex) {
+    for (int i = 0; i < input.size(); i++) {
+        if (leaveOutIndex != i) {
+            output.push_back(input[i]);
+        }
+    }        
+}
+
+bool LevelIsSafeP2(std::vector<int>& level)
+{
+    bool isSafe = LevelIsSafeP1(level);
+    if (!isSafe)
+    {
+        for (int i = 0; i < level.size(); i++)
+        {
+            std::vector<int> copyLevel;
+            // Copy vector but leave out i
+            copyVectorLeaveOut(level, copyLevel, i);
+            isSafe = LevelIsSafeP1(copyLevel);
+            if (isSafe) {
+                break;
+            }
+        }
+    }
+    return isSafe;
+}
+
 //  cl.exe /Zi /EHsc /nologo /FeC:\Git\AdventOfCode\Year2024\Day01\output\main.exe C:\Git\AdventOfCode\Year2024\Day01\main.cpp
-int FindSafeLevels(std::string filePath)
+int FindSafeLevels(std::string filePath, bool part1)
 {
     std::string myline;
     std::ifstream myfile(filePath);
@@ -70,9 +97,19 @@ int FindSafeLevels(std::string filePath)
             level.emplace_back(nextNumber);
         }
 
-        if (LevelIsSafe(level))
+        if (part1)
         {
-            safeLevels += 1;
+            if (LevelIsSafeP1(level))
+            {
+                safeLevels += 1;
+            }
+        }
+        else
+        {
+            if (LevelIsSafeP2(level))
+            {
+                safeLevels += 1;
+            }
         }
     }
 
@@ -82,14 +119,24 @@ int FindSafeLevels(std::string filePath)
 
 int main()
 {
-    if (FindSafeLevels("input/test_input") != 2)
+    if (FindSafeLevels("input/test_input", true) != 2)
     {
         std::cout << "ERROR: in test\n";
     }
 
-    if (FindSafeLevels("input/input") != 321)
+    if (FindSafeLevels("input/input", true) != 321)
     {
         std::cout << "ERROR: in input\n";
     };
+
+    if (FindSafeLevels("input/test_input", false) != 4)
+    {
+        std::cout << "ERROR: in test\n";
+    }
+
+    if (FindSafeLevels("input/input", false) != 4)
+    {
+        std::cout << "ERROR: in input\n";
+    }
     return 0;
 }
