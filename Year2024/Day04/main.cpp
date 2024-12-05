@@ -128,18 +128,69 @@ int FindXMASOccurrences(std::string filePath, bool part1)
     return xmasCount;
 }
 
+int findCombi(std::string &line3x3, int horizontalOffset, int line_length, char first, char second, char third, char fourth)
+{
+    int SIZE_CROSS = 3;
+    std::string test_regex;
+    char buff[100];
+
+    // Top row
+    snprintf(buff, sizeof(buff), "^[A-Z]{%d}%c[A-Z]%c[A-Z]{%d}\n", horizontalOffset, first, second, (line_length - horizontalOffset - SIZE_CROSS));
+    std::string regexL1 = buff;
+
+    // A in middle
+    snprintf(buff, sizeof(buff), "^[A-Z]{%d}A[A-Z]{%d}\n", horizontalOffset + 1, (line_length - horizontalOffset - SIZE_CROSS + 1));
+    std::string regexL2 = buff;
+
+    // Bottom row
+    // Top row
+    snprintf(buff, sizeof(buff), "^[A-Z]{%d}%c[A-Z]%c[A-Z]{%d}\n", horizontalOffset, third, fourth, (line_length - horizontalOffset - SIZE_CROSS));
+    std::string regexL3 = buff;
+
+    test_regex = regexL1 + regexL2 + regexL3;
+    return FindOccurrences(line3x3, test_regex); // TODO last regex with \n is bad
+}
+
 int findMasXesIn3x3(std::string line3x3)
 {
     const int SIZE_CROSS = 3;
     int occurrences = 0;
 
-    int line_length = line3x3.find("\n"); // TODO inputString.find("\n");
+    int line_length = line3x3.find("\n");
 
     std::string test_regex;
     int horizontalOffset;
     for (horizontalOffset = 0; horizontalOffset < (line_length - SIZE_CROSS + 1); horizontalOffset++)
     {
-        char buff[100];
+        /*
+        M M
+         A
+        S S
+        */
+        occurrences += findCombi(line3x3, horizontalOffset, line_length, 'M', 'M', 'S', 'S');
+
+        /*
+        M S
+         A
+        M S
+        */
+        occurrences += findCombi(line3x3, horizontalOffset, line_length, 'M', 'S', 'M', 'S');
+
+        /*
+        S M
+         A
+        S M
+        */
+        occurrences += findCombi(line3x3, horizontalOffset, line_length, 'S', 'M', 'S', 'M');
+
+        /*
+        S S
+         A
+        M M
+        */
+        occurrences += findCombi(line3x3, horizontalOffset, line_length, 'S', 'S', 'M', 'M');
+
+        /*char buff[100];
         snprintf(buff, sizeof(buff), "^[A-Z]{%d}M[A-Z]S[A-Z]{%d}\n", horizontalOffset, (line_length - horizontalOffset - SIZE_CROSS));
         std::string regexL1 = buff;
 
@@ -147,8 +198,8 @@ int findMasXesIn3x3(std::string line3x3)
         std::string regexL2 = buff;
 
         test_regex = regexL1 + regexL2 + regexL1;
-        int ocTest = FindOccurrences(line3x3, test_regex); // TODO last regex with \n is bad
-        occurrences += ocTest;
+        int ocTest = FindOccurrences(line3x3, test_regex); // TODO last regex with \n is bad*/
+        // occurrences += ocTest;
     }
     return occurrences;
 }
@@ -173,7 +224,7 @@ int findMasXes(std::string filePath)
         lines.emplace_back(myline);
     }
 
-    for (int lineIndex = 0; lineIndex < lines.size() - 3; lineIndex++)
+    for (int lineIndex = 0; lineIndex < lines.size() - 2; lineIndex++)
     {
         std::string line3x3;
         for (int i = 0; i < 3; i++)
@@ -183,29 +234,30 @@ int findMasXes(std::string filePath)
         occurrences += findMasXesIn3x3(line3x3);
     }
 
+    std::cout << "FOUND " << occurrences << std::endl;
     return occurrences;
 }
 
 int main()
 {
-    // if (FindXMASOccurrences("input/test_input", true) != 18)
-    // {
-    //     std::cout << "ERROR: in test\n";
-    // }
-
-    // if (FindXMASOccurrences("input/input", true) != 2583)
-    // {
-    //     std::cout << "ERROR: in input\n";
-    // };
-
-    if (findMasXes("input/test_input") != 9)
+    if (FindXMASOccurrences("input/test_input", true) != 18)
     {
         std::cout << "ERROR: in test\n";
     }
 
-    // if (FindXMASOccurrences("input/input", false) != 4)
-    // {
-    //     std::cout << "ERROR: in input\n";
-    // }
+    if (FindXMASOccurrences("input/input", true) != 2583)
+    {
+        std::cout << "ERROR: in input\n";
+    };
+
+    if (findMasXes("input/test_input") != 9)
+    {
+        std::cout << "ERROR: in test: " << std::endl;
+    }
+
+    if (findMasXes("input/input") != 1978) // 1951 too low
+    {
+        std::cout << "ERROR: in input\n";
+    }
     return 0;
 }
