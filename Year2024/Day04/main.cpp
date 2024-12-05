@@ -24,7 +24,6 @@ int FindXMAS(std::string &searchString)
     return occurrences;
 }
 
-// TODO direction! (NW to SW | NE to SE)
 std::string getDiagonalString(std::vector<std::string> &horizontalLines, std::vector<std::string> &verticalLines, int startX, int endX, int startY, int endY, bool direction)
 {
     std::string diagStr = "";
@@ -121,7 +120,6 @@ int FindXMASOccurrences(std::string filePath, bool part1)
     {
         int horiIdx = 0;
 
-        // TODO some diagonal lines getting scanned multiple times
         std::string diagString = getDiagonalString(horizontalLines, verticalLines, verIdx, horizontalLines[0].size(), horiIdx, verticalLines[0].size(), false);
         xmasCount += FindXMAS(diagString);
     }
@@ -130,19 +128,77 @@ int FindXMASOccurrences(std::string filePath, bool part1)
     return xmasCount;
 }
 
-int main()
+int findMasXesIn3x3(std::string line3x3)
 {
-    if (FindXMASOccurrences("input/test_input", true) != 18)
+    const int SIZE_CROSS = 3;
+    int occurrences = 0;
+
+    int line_length = line3x3.find("\n"); // TODO inputString.find("\n");
+
+    std::string test_regex;
+    int horizontalOffset;
+    for (horizontalOffset = 0; horizontalOffset < (line_length - SIZE_CROSS + 1); horizontalOffset++)
     {
-        std::cout << "ERROR: in test\n";
+        char buff[100];
+        snprintf(buff, sizeof(buff), "^[A-Z]{%d}M[A-Z]S[A-Z]{%d}\n", horizontalOffset, (line_length - horizontalOffset - SIZE_CROSS));
+        std::string regexL1 = buff;
+
+        snprintf(buff, sizeof(buff), "^[A-Z]{%d}A[A-Z]{%d}\n", horizontalOffset + 1, (line_length - horizontalOffset - SIZE_CROSS + 1));
+        std::string regexL2 = buff;
+
+        test_regex = regexL1 + regexL2 + regexL1;
+        int ocTest = FindOccurrences(line3x3, test_regex); // TODO last regex with \n is bad
+        occurrences += ocTest;
+    }
+    return occurrences;
+}
+
+int findMasXes(std::string filePath)
+{
+    int occurrences = 0;
+
+    std::string myline;
+    std::ifstream myfile(filePath);
+    if (!myfile)
+    {
+        std::cerr << "Error: Unable to open file!" << std::endl;
+        return 1;
     }
 
-    if (FindXMASOccurrences("input/input", true) != 2583)
-    {
-        std::cout << "ERROR: in input\n";
-    };
+    std::vector<std::string> lines;
 
-    if (FindXMASOccurrences("input/test_input", false) != 4)
+    // Horizontally
+    while (std::getline(myfile, myline))
+    {
+        lines.emplace_back(myline);
+    }
+
+    for (int lineIndex = 0; lineIndex < lines.size() - 3; lineIndex++)
+    {
+        std::string line3x3;
+        for (int i = 0; i < 3; i++)
+        {
+            line3x3 += lines[lineIndex + i] + "\n";
+        }
+        occurrences += findMasXesIn3x3(line3x3);
+    }
+
+    return occurrences;
+}
+
+int main()
+{
+    // if (FindXMASOccurrences("input/test_input", true) != 18)
+    // {
+    //     std::cout << "ERROR: in test\n";
+    // }
+
+    // if (FindXMASOccurrences("input/input", true) != 2583)
+    // {
+    //     std::cout << "ERROR: in input\n";
+    // };
+
+    if (findMasXes("input/test_input") != 9)
     {
         std::cout << "ERROR: in test\n";
     }
