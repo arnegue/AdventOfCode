@@ -164,7 +164,7 @@ int main()
     // {
     //     std::cout << "Error in test_input " << std::endl;
     // }
-    if (Update("input/input") != 143)
+    if (Update("input/input") != 5391)
     {
         std::cout << "Error in test_input " << std::endl;
     }
