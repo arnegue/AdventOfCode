@@ -108,17 +108,48 @@ bool AreRulesApplied(const std::vector<Rule> &rules, const std::vector<int> &upd
         int left = std::get<0>(rule);
         int right = std::get<1>(rule);
 
-        int LeftVal = FindNumberInVector(update, left);
-        int RightVal = FindNumberInVector(update, right);
+        int leftIdx = FindNumberInVector(update, left);
+        int rightIdx = FindNumberInVector(update, right);
 
-        if (LeftVal < 0 ||RightVal < 0) {
-            std::cout << "Erm wahat " << std::endl;
+        if (leftIdx < 0 || rightIdx < 0)
+        {
+            continue;  // Rule doesn't apply to this specific update
         }
-        else if(LeftVal > RightVal) {
+        else if (leftIdx > rightIdx)
+        {
             return false;
         }
     }
     return true;
+}
+
+int OrderCorrectlyGetMiddleSum(const std::vector<Rule> &rules, std::vector<int> &update)
+{
+    while (!AreRulesApplied(rules, update))
+    {
+        for (Rule rule : rules)
+        {
+            int left = std::get<0>(rule);
+            int right = std::get<1>(rule);
+
+            int leftIdx = FindNumberInVector(update, left);
+            int rightIdx = FindNumberInVector(update, right);
+
+            if (leftIdx < 0 || rightIdx < 0)
+            {
+                continue; // Rule doesn't apply to this specific update
+            }
+            else if (leftIdx > rightIdx)
+            {
+                // Swap values
+                int rightVal = update[rightIdx];
+                int leftVal = update[leftIdx];
+                update[leftIdx] = rightVal;
+                update[rightIdx] = leftVal;
+            }
+        }
+    }
+    return update[update.size() / 2];
 }
 
 int Update(std::string filepath)
@@ -136,6 +167,7 @@ int Update(std::string filepath)
     extractPageUpdates(updates, fileContent);
 
     int updateMiddleSum = 0;
+    int incorrectMiddleSum = 0;
     int updateI = 0;
     for (std::vector<int> update : updates)
     {
@@ -148,23 +180,24 @@ int Update(std::string filepath)
         }
         else
         {
+            incorrectMiddleSum += OrderCorrectlyGetMiddleSum(rules, update);
             std::cout << "not ";
         }
         std::cout << "applied for update " << updateI << std::endl;
         updateI++;
     }
 
-    std::cout << "Update sum " << updateMiddleSum << std::endl;
+    std::cout << "Update sum: " << updateMiddleSum << " IncorrectSum: " << incorrectMiddleSum << std::endl;
     return updateMiddleSum;
 }
 
 int main()
 {
-    // if (Update("input/test_input") != 143)
-    // {
-    //     std::cout << "Error in test_input " << std::endl;
-    // }
-    if (Update("input/input") != 5391)
+    if (Update("input/test_input") != 143) // 123 incorrect
+    {
+        std::cout << "Error in test_input " << std::endl;
+    }
+    if (Update("input/input") != 5391) // 6142 incorrect
     {
         std::cout << "Error in test_input " << std::endl;
     }
