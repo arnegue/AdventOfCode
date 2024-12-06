@@ -1,5 +1,9 @@
 My implementations for [AdventOfCode](https://adventofcode.com/)
 
+# Each year different language?
+* 2023 python
+* 2024 C++
+* 2025 Rust? Tbd
 
 # 2024 How to
 
