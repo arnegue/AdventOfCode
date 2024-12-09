@@ -8,26 +8,92 @@
 #include <vector>
 #include <tuple>
 
-using Equation = std::tuple<int, std::vector<int>>;
+using Equation = std::tuple<uint64_t, std::vector<uint64_t>>;
 
-std::vector<std::vector<int>> GetEquation(std::string lineToParse)
+Equation GetEquation(std::string lineToParse)
 {
     const std::regex pagesRegex("\\d+");
-    std::vector<std::vector<int>> equations;
 
     auto rulBegin = std::sregex_iterator(lineToParse.begin(), lineToParse.end(), pagesRegex);
     auto rulEnd = std::sregex_iterator();
+    std::sregex_iterator i = rulBegin;
+    std::vector<uint64_t> numbers;
 
-    for (std::sregex_iterator i = rulBegin; i != rulEnd; ++i)
+    uint64_t result = std::stoull((*i)[0].str());
+    i++;
+    for (i; i != rulEnd; ++i)
     {
         std::smatch match = *i;
-        int leftVal = std::stoi((*i)[1].str());
-        int rightVal = std::stoi((*i)[2].str());
+        numbers.emplace_back(std::stoi((*i)[0].str()));
     }
+    return {result, numbers};
 }
 
-int GetSumPossibleEquations(std::string filePath)
+uint64_t EquationIsPossible(Equation &eq)
 {
+    uint64_t result = 0;
+    const uint64_t target = std::get<0>(eq);
+    std::vector<uint64_t> results;
+    std::vector<uint64_t> numbers = std::get<1>(eq);
+    for (auto n : numbers)
+    {
+        if (results.size() == 0)
+        {
+            results.emplace_back(n);
+            continue;
+        }
+        std::vector<uint64_t> resultsToAdd;
+        for (auto res : results)
+        {
+            auto add = res + n;
+            auto mul = res * n;
+            if (add <= target)
+            {
+                resultsToAdd.emplace_back(add);
+            }
+            if (mul <= target)
+            {
+                resultsToAdd.emplace_back(mul);
+            }
+        }
+        results = resultsToAdd;
+    }
+
+    for (auto result : results)
+    {
+        if (result == target)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+uint64_t GetSumPossibleEquations(std::string filePath)
+{
+    std::string myline;
+    std::ifstream myfile(filePath);
+    uint64_t sumPossibilities = 0;
+    if (!myfile)
+    {
+        std::cerr << "Error: Unable to open file!" << std::endl;
+        return 0;
+    }
+
+    // Horizontally
+    while (std::getline(myfile, myline))
+    {
+        Equation eq = GetEquation(myline);
+        if (EquationIsPossible(eq))
+        {
+            uint64_t result = std::get<0>(eq);
+            std::cout << "Equation with result " << std::get<0>(eq) << " is possible" << std::endl;
+            sumPossibilities += result;
+        }
+    }
+    std::cout << "Sum possibilities " << sumPossibilities << std::endl;
+    return sumPossibilities;
 }
 
 int main()
@@ -37,10 +103,10 @@ int main()
         std::cout << "Error in test_input" << std::endl;
     }
 
-    // if (GetSumPossibleEquations("input/input") != 4752)
-    // {
-    //     std::cout << "Error in input" << std::endl;
-    // }
+    if (GetSumPossibleEquations("input/input") != 4122618559853)
+    {
+        std::cout << "Error in input" << std::endl;
+    }
 
     // if (GetSumPossibleEquations("input/test_input") != 6)
     // {
