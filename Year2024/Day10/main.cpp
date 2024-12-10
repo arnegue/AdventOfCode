@@ -61,19 +61,21 @@ inline bool DiffIsOkay(Map &map, Point &first, Point &second)
     }
 }
 
-void GetReachableNines(Map &map, int &reachableNines, std::set<Point> &alreadyVisitedPoints, Point &startPoint)
+void GetReachableNines(Map &map, int &reachableNines, std::set<Point> &alreadyVisitedPoints, Point &startPoint, bool part1)
 {
     int h = std::get<0>(startPoint);
     int v = std::get<1>(startPoint);
     Point testPoint;
 
-    if (alreadyVisitedPoints.contains(startPoint))
+    if (part1)
     {
-        return;
+        if (alreadyVisitedPoints.contains(startPoint))
+        {
+            return;
+        }
+        alreadyVisitedPoints.emplace(startPoint);
     }
-    alreadyVisitedPoints.emplace(startPoint);
-
-    if (GetMapValue(map, startPoint) == 9)
+    if (GetMapValue(map, startPoint) == 9) // First visit
     {
         // std::cout << "Found 9 at " << h << "/" << v << std::endl;
         reachableNines++;
@@ -84,32 +86,32 @@ void GetReachableNines(Map &map, int &reachableNines, std::set<Point> &alreadyVi
     testPoint = std::make_tuple(h + 1, v);
     if (DiffIsOkay(map, startPoint, testPoint))
     {
-        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint);
+        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint, part1);
     }
 
     // Try h-1
     testPoint = std::make_tuple(h - 1, v);
     if (DiffIsOkay(map, startPoint, testPoint))
     {
-        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint);
+        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint, part1);
     }
     // Try v+1
     testPoint = std::make_tuple(h, v + 1);
     if (DiffIsOkay(map, startPoint, testPoint))
     {
-        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint);
+        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint, part1);
     }
 
     // Try v-1
     testPoint = std::make_tuple(h, v - 1);
     if (DiffIsOkay(map, startPoint, testPoint))
     {
-        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint);
+        GetReachableNines(map, reachableNines, alreadyVisitedPoints, testPoint, part1);
     }
     return;
 }
 
-int GetTrailHeadScore(std::string filePath)
+int GetTrailHeadScore(std::string filePath, bool part1)
 {
     int score = 0;
     Map map = GetMap(filePath);
@@ -122,7 +124,7 @@ int GetTrailHeadScore(std::string filePath)
             {
                 int reachableNines = 0;
                 std::set<Point> alreadyVisitedPoints;
-                GetReachableNines(map, reachableNines, alreadyVisitedPoints, startPoint);
+                GetReachableNines(map, reachableNines, alreadyVisitedPoints, startPoint, part1);
                 score += reachableNines;
             }
         }
@@ -133,25 +135,25 @@ int GetTrailHeadScore(std::string filePath)
 
 int main()
 {
-    if (GetTrailHeadScore("input/test_input") != 36)
+    if (GetTrailHeadScore("input/test_input", true) != 36)
     {
         std::cout << "Error in test_input" << std::endl;
     }
 
-    if (GetTrailHeadScore("input/input") != 822)
+    if (GetTrailHeadScore("input/input", true) != 822)
     {
         std::cout << "Error in input" << std::endl;
     }
 
-    // if (GetTrailHeadScore("input/test_input") != 6)
-    // {
-    //     std::cout << "Error in test_input" << std::endl;
-    // }
+    if (GetTrailHeadScore("input/test_input", false) != 81)
+    {
+        std::cout << "Error in test_input" << std::endl;
+    }
 
-    // if (GetTrailHeadScore("input/input") != 1719)
-    // {
-    //     std::cout << "Error in test_input" << std::endl;
-    // }
+    if (GetTrailHeadScore("input/input", false) != 1801)
+    {
+        std::cout << "Error in input" << std::endl;
+    }
 
     return 0;
 }
